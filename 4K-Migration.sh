@@ -1,7 +1,16 @@
 #!/bin/bash
 
+# Set color variables
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+TEAL=$(tput setaf 6)
+NC=$(tput sgr0)  # Reset color
+
 # Log File Setup
-timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+time_stamp=$(date +"%Y-%m-%d_%H-%M-%S")
+echo "${BLUE}Start Time: ${time_stamp}${NC}"
 
 # Global Variable Setup
 search_directory=""
@@ -26,12 +35,12 @@ handle_options() {
         -m | --movies)
               search_directory="/mnt/Starlink/Movies"
               destination_directory="/mnt/Starlink/Movies-4K"
-              log_file="logs/Movie-4K-Migration_${timestamp}.log"
+              log_file="logs/Movie-4K-Migration_${time_stamp}.log"
               ;;
         -t | --tvshows)
               search_directory="/mnt/Starlink/TvShows"
               destination_directory="/mnt/Starlink/TvShows-4K"
-              log_file="logs/TvShows-4K-Migration_${timestamp}.log"
+              log_file="logs/TvShows-4K-Migration_${time_stamp}.log"
               ;;
         # *)
         #       echo "Invalid option: $1" >&2
@@ -52,14 +61,6 @@ fi
 
 # Redirects both stderr and stdout outputs to log_file and stdout simultaneously
 test x$1 = x$'\x00' && shift || { set -o pipefail ; ( exec 2>&1 ; $0 $'\x00' "$@" ) | tee "$log_file" ; exit $? ; }
-
-# Set color variables
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-TEAL=$(tput setaf 6)
-NC=$(tput sgr0)  # Reset color
 
 # Step 1: Find all files with 2160 in the name
 echo "${YELLOW}=================================== Step 1: Find all files within ${search_directory} with 2160 in the name ==========================================${NC}"
@@ -101,3 +102,4 @@ for file in "${files[@]}"; do
 done | pv -l -s "$total_files" -p -t -e
 
 echo "${YELLOW}########################################### All files moved successfully #################################################${NC}"
+echo "${BLUE}End Time: $(date +"%Y-%m-%d_%H-%M-%S")${NC}"
